@@ -10,6 +10,10 @@ data/
 !data/.gitkeep
 !data/README.md
 
+#utils
+utils/
+utils/access.txt
+
 # Sous-dossiers typiques d'un projet ML
 data/raw/
 data/interim/
@@ -147,3 +151,6 @@ results/
 predictions/
 logs/
 *.tfevents.*
+utils_scripts/access.txt
+*.txt
+utils_scripts/access.txt
