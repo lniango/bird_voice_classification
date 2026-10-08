@@ -49,6 +49,13 @@ class BirdSoundDataset(Dataset):
                 )
 
         self.sample_rate = 32000
+        self.target_duration = 1.0
+        self.target_frames = int(
+                self.sample_rate * self.target_duration
+                )
+
+
+
 
 
     def __len__(self):
@@ -72,6 +79,18 @@ class BirdSoundDataset(Dataset):
                 frame_offset = frame_offset,
                 num_frames = num_frames,
                 )
+
+        #Extract 1sec 
+        if waveform.shape[1] < self.target_frames:
+            padding = self.target_frames - waveform.shape[1]
+
+            waveform = torch.nn.functional.pad(
+                    waveform,
+                    (0, padding),
+                    )
+
+        elif waveform.shape[1] > self.target_frames:
+            waveform = waveform[:, :self.target_frames]
 
         label = self.label_map[row["Species eBird Code"]]
 
