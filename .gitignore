@@ -1,0 +1,149 @@
+# =========================================================
+#  .gitignore - bird_classifier
+#  Exclut les données, artefacts et fichiers volumineux
+# =========================================================
+
+# ---------------------------------------------------------
+# 1. DOSSIER DATA (données brutes, intermédiaires, traitées)
+# ---------------------------------------------------------
+data/
+!data/.gitkeep
+!data/README.md
+
+# Sous-dossiers typiques d'un projet ML
+data/raw/
+data/interim/
+data/processed/
+data/external/
+data/annotations/
+data/audio/
+data/spectrograms/
+data/features/
+
+# ---------------------------------------------------------
+# 2. FICHIERS DE DONNÉES PAR EXTENSION
+# ---------------------------------------------------------
+# Audio
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+*.aiff
+*.aif
+
+# CSV / annotations
+*.csv
+*.tsv
+*.json
+*.jsonl
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# Images / spectrogrammes
+*.png
+*.jpg
+*.jpeg
+*.tiff
+*.bmp
+*.npy
+*.npz
+
+# Archives / datasets compressés
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Exceptions : si tu veux versionner quelques petits fichiers de config
+!data/README.md
+!data/sample.csv
+!configs/*.yaml
+!configs/*.yml
+!configs/*.json
+
+# ---------------------------------------------------------
+# 3. MODÈLES ET CHECKPOINTS
+# ---------------------------------------------------------
+models/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.tflite
+*.safetensors
+*.bin
+*.joblib
+runs/
+wandb/
+mlruns/
+lightning_logs/
+
+# ---------------------------------------------------------
+# 4. NOTEBOOKS ET CACHE
+# ---------------------------------------------------------
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ---------------------------------------------------------
+# 5. ENVIRONNEMENTS PYTHON
+# ---------------------------------------------------------
+venv/
+.venv/
+env/
+ENV/
+.conda/
+*.egg-info/
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+pip-wheel-metadata/
+
+# ---------------------------------------------------------
+# 6. OUTILS ET CACHE
+# ---------------------------------------------------------
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+htmlcov/
+.cache/
+*.log
+
+# ---------------------------------------------------------
+# 7. ÉDITEURS / OS
+# ---------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------
+# 8. SECRETS ET CONFIG SENSIBLE
+# ---------------------------------------------------------
+.env
+.env.*
+*.key
+*.pem
+secrets.yaml
+credentials.json
+
+# ---------------------------------------------------------
+# 9. SORTIES D'ENTRAÎNEMENT / RÉSULTATS
+# ---------------------------------------------------------
+outputs/
+results/
+predictions/
+logs/
+*.tfevents.*
