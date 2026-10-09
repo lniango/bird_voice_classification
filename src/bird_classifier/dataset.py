@@ -53,7 +53,14 @@ class BirdSoundDataset(Dataset):
         self.target_frames = int(
                 self.sample_rate * self.target_duration
                 )
-
+        
+        # Mel transform
+        self.mel_transform = torchaudio.transforms.MelSpectrogram(
+                sample_rate = self.sample_rate,
+                n_fft=1024,
+                hop_length=512,
+                n_mels=64,
+                )
 
 
 
@@ -70,8 +77,12 @@ class BirdSoundDataset(Dataset):
         end_time   = float(row["End Time (s)"])
 
         frame_offset = int(start_time * self.sample_rate)
-        num_frames = int(
+        # Take at least 1 frame
+        num_frames = max(
+                1,
+                int(
                 (end_time - start_time) * self.sample_rate
+                )
                 )
 
         waveform, sample_rate = torchaudio.load(
@@ -92,9 +103,12 @@ class BirdSoundDataset(Dataset):
         elif waveform.shape[1] > self.target_frames:
             waveform = waveform[:, :self.target_frames]
 
+        #Mel spectogram
+        mel = self.mel_transform(waveform)
+
         label = self.label_map[row["Species eBird Code"]]
 
-        return waveform, torch.tensor(label, dtype=torch.long)
+        return mel, torch.tensor(label, dtype=torch.long)
 
 
 
