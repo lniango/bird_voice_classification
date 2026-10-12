@@ -15,6 +15,7 @@ cd /SCRATCH/l26niang/bird_classifier
 
 source /SCRATCH/l26niang/bird-env/bin/activate
 export PYTHONPATH=src
+export CUBLAS_WORKSPACE_CONFIG=:4096:8
 
 echo "Job ID : $SLURM_JOB_ID"
 echo "Nœud : $SLURMD_NODENAME"
