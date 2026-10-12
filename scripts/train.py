@@ -27,7 +27,7 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
 
     # use deterministic algorithms when available
-    torch.use_deterministic_algorithms(True)
+    torch.use_deterministic_algorithms(False)
 
 
 def main():
