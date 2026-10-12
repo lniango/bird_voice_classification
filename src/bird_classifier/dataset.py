@@ -5,6 +5,7 @@ import torch
 import torchaudio
 from torch.utils.data import Dataset
 from functools import lru_cache
+from torchaudio.transforms import FrequencyMasking, TimeMasking
 
 
 class BirdSoundDataset(Dataset):
@@ -152,5 +153,50 @@ class PrecomputedMelDataset(Dataset):
 
         return mel, label
 
+
+class AugmentedMelDataset(Dataset):
+    """Precomputed Mel spectograms with SpecAugment for training."""
+
+    def __init__(
+        self,
+        file_path,
+        freq_mask_param=8,
+        time_mask_param=8,
+        num_mask=2,
+        ):
+        
+        data = torch.load(file_path, map_location='cpu', weights_only=True)
+
+        self.features = data["features"]
+        self.labels = data["labels"]
+
+        self.freq_masking = FrequencyMasking(
+                    freq_mask_param=freq_mask_param,
+                    )
+        self.time_masking = TimeMasking(
+                time_mask_param=time_mask_param)
+        
+
+        assert len(self.features) == len(self.labels)
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, index):
+        # initial shape [64, 63)
+        mel = self.features[index].float()
+        # Add channel (1, 64, 63)
+        mel = mel.unsqueeze(0)   
+
+        # Apply augmentations
+        mel = self.freq_masking(mel)
+        mel = self.time_masking(mel)
+
+        label = self.labels[index]
+
+        return mel, label
+
+
+                    
 
         

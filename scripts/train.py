@@ -6,17 +6,40 @@ from torch.utils.tensorboard import SummaryWriter
 
 sys.path.append("src")
 
-from bird_classifier.dataset import PrecomputedMelDataset
+from bird_classifier.dataset import PrecomputedMelDataset, AugmentedMelDataset
 from bird_classifier.model import BirdCNN
+
+import random
+import numpy as np
+
+train_num = 3
+
+def set_seed(seed=42):
+    """Random seed for reproductibility"""
+    random.seed(seed)
+    np.random.seed(seed)
+
+    torch.manual_seed(seed) #generate random numbers for the current GPU
+    torch.cuda.manual_seed_all(seed) # For all GPUs
+
+    # Reprocductibility of cuda operations
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+    # use deterministic algorithms when available
+    torch.use_deterministic_algorithms(True)
 
 
 def main():
+    # Set seed
+    set_seed(seed=42)
+
     # Choisir le GPU si disponible
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Device : {device}", flush=True)
 
     # Charger les datasets
-    train_dataset = PrecomputedMelDataset("data/mels/train.pt")
+    train_dataset = AugmentedMelDataset("data/mels/train.pt")
     val_dataset = PrecomputedMelDataset("data/mels/val.pt")
 
     train_loader = DataLoader(
@@ -42,9 +65,9 @@ def main():
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
     # Boucle d'entraînement
-    epochs = 10
+    epochs = 20
 
-    writer = SummaryWriter(log_dir="runs/bird_cnn_1st")
+    writer = SummaryWriter(log_dir=f"runs/bird_cnn_{train_num}")
 
     for epoch in range(epochs):
         model.train()
@@ -122,9 +145,9 @@ def main():
     # 6. Sauvegarder le modèle entraîné
     torch.save(
         model.state_dict(),
-        "checkpoints/bird_cnn.pth",
+        f"checkpoints/bird_cnn{train_num}.pth",
     )
-    print("Modèle sauvegardé dans checkpoints/bird_cnn.pth", flush=True)
+    print(f"Modèle sauvegardé dans checkpoints/bird_cnn{train_num}.pth", flush=True)
 
 
 if __name__ == "__main__":
