@@ -25,7 +25,7 @@ class BirdCNN(nn.Module):
             nn.Flatten(),
             nn.Linear(32 * 8 * 8, 128),
             nn.ReLU(),
-            nn.Dropout(0.3),
+            nn.Dropout(0.5),
             nn.Linear(128, num_classes),
         )
 

@@ -12,7 +12,8 @@ from bird_classifier.model import BirdCNN
 import random
 import numpy as np
 
-train_num = 3
+train_tag = "11" # 1: weight_decay == True; 0: Dropout == False
+train_num = 5
 
 def set_seed(seed=42):
     """Random seed for reproductibility"""
@@ -65,9 +66,9 @@ def main():
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
     # Boucle d'entraînement
-    epochs = 20
+    epochs = 100
 
-    writer = SummaryWriter(log_dir=f"runs/bird_cnn_{train_num}")
+    writer = SummaryWriter(log_dir=f"runs/bird_cnn_{train_num}_{train_tag}_100epochs")
 
     for epoch in range(epochs):
         model.train()
@@ -145,9 +146,9 @@ def main():
     # 6. Sauvegarder le modèle entraîné
     torch.save(
         model.state_dict(),
-        f"checkpoints/bird_cnn{train_num}.pth",
+        f"checkpoints/bird_cnn{train_num}train_tag.pth",
     )
-    print(f"Modèle sauvegardé dans checkpoints/bird_cnn{train_num}.pth", flush=True)
+    print(f"Modèle sauvegardé dans checkpoints/bird_cnn{train_num}_{train_tag}_100epochs.pth", flush=True)
 
 
 if __name__ == "__main__":
