@@ -4,6 +4,8 @@ import pandas as pd
 import torch
 import torchaudio
 from torch.utils.data import Dataset
+from functools import lru_cache
+
 
 class BirdSoundDataset(Dataset):
     def __init__(self, data_dir, split):
@@ -68,10 +70,24 @@ class BirdSoundDataset(Dataset):
     def __len__(self):
         return len(self.annotations)
 
+    @lru_cache(maxsize=16)
+    def _load_audio(self, filename):
+        audio_path = self.data_dir / "audio" / filename
+        waveform, sample_rate = torchaudio.load(audio_path)
+
+        if sample_rate != self.sample_rate:
+            raise ValueError(
+                    f"Sample rate inattendu pour {filename}: "
+                    f"{sample_rate} Hz, attendu {self.sample_rate} Hz"
+                    )
+        return waveform
+
+
     def __getitem__(self, index):
         row = self.annotations.iloc[index]
         
-        audio_path = self.data_dir / "audio" / row["Filename"]
+        #audio_path = self.data_dir / "audio" / row["Filename"]
+        audio = self._load_audio(row["Filename"])
 
         start_time = float(row["Start Time (s)"])
         end_time   = float(row["End Time (s)"])
@@ -85,11 +101,12 @@ class BirdSoundDataset(Dataset):
                 )
                 )
 
-        waveform, sample_rate = torchaudio.load(
+        """waveform, sample_rate = torchaudio.load(
                 audio_path,
                 frame_offset = frame_offset,
                 num_frames = num_frames,
-                )
+                )"""
+        waveform = audio[:, frame_offset:frame_offset + num_frames]
 
         #Extract 1sec 
         if waveform.shape[1] < self.target_frames:
@@ -111,7 +128,29 @@ class BirdSoundDataset(Dataset):
         return mel, torch.tensor(label, dtype=torch.long)
 
 
+class PrecomputedMelDataset(Dataset):
+    """Load mel precomputed spectograms from .pt files"""
+    def __init__(self, file_path):
+        data = torch.load(
+                file_path,
+                map_location="cpu",
+                weights_only=True
+                )
 
+        self.features = data["features"]
+        self.labels = data["labels"]
+
+        assert len(self.features) == len(self.labels), (
+                "The nb of spectograms must matching nb of labels")
+
+    def __len__(self):
+        return len(self.labels)
+
+    def __getitem__(self, index):
+        mel = self.features[index].unsqueeze(0).float()
+        label = self.labels[index]
+
+        return mel, label
 
 
         
